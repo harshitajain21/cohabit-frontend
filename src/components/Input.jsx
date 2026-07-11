@@ -1,0 +1,1 @@
+export default function Input({label,error,...props}){return <div className="field">{label&&<span className="label">{label}</span>}<input className="input" {...props}/>{error&&<div className="error-msg">{error}</div>}</div>}

@@ -1,0 +1,2 @@
+import {T} from "../constants/theme"; import {initials} from "../utils/helpers"; import ScorePill from "./ScorePill";
+export default function MatchCard({match,index,onClick}){return <div className="match-card" onClick={onClick}><div className="avatar" style={{background:[T.slate,"#2D4A6B","#4A3D6B","#3D6B4A"][index%4]}}>{initials(match.name)}</div><div><div className="match-name">{match.name}</div><div className="match-meta">{match.branch} · Year {match.year}</div></div><ScorePill score={match.compatibilityReport?.overallScore??0}/></div>}

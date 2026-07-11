@@ -1,0 +1,4 @@
+const API="http://localhost:8080"; let authToken=null;
+export const setAuthToken=token=>{authToken=token};
+export async function apiCall(method,path,body,auth=true){const headers={"Content-Type":"application/json"};if(auth&&authToken)headers.Authorization=`Bearer ${authToken}`;const res=await fetch(`${API}${path}`,{method,headers,body:body?JSON.stringify(body):undefined});const text=await res.text();let data;try{data=JSON.parse(text)}catch{data=text}if(!res.ok)throw new Error(data?.message||data||`Error ${res.status}`);return data}
+export const register=body=>apiCall("POST","/auth/register",body,false); export const login=body=>apiCall("POST","/auth/login",body,false); export const saveQuestionnaire=body=>apiCall("POST","/questionnaire",body); export const savePreferences=body=>apiCall("POST","/preferences",body); export const getMatches=()=>apiCall("GET","/matches");
