@@ -268,7 +268,8 @@ const CRITERIA_LABELS = {
 const ALL_CRITERIA = Object.keys(CRITERIA_LABELS);
 
 // ── API ────────────────────────────────────────────────────────────────────────
-const API = "http://localhost:8080";
+const API =
+  import.meta.env.VITE_API_URL || "http://localhost:8080";
 let authToken = null;
 
 async function apiCall(method, path, body, auth = true) {
