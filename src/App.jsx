@@ -274,16 +274,30 @@ let authToken = localStorage.getItem("token");
 
 async function apiCall(method, path, body, auth = true) {
   const headers = { "Content-Type": "application/json" };
-  if (auth && authToken) headers["Authorization"] = `Bearer ${authToken}`;
+
+  if (auth) {
+    const token = localStorage.getItem("token");
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+  }
+
   const res = await fetch(`${API}${path}`, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
   });
+
   const text = await res.text();
   let data;
-  try { data = JSON.parse(text); } catch { data = text; }
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+
   if (!res.ok) throw new Error(data?.message || data || `Error ${res.status}`);
+
   return data;
 }
 
