@@ -974,7 +974,25 @@ function DashboardScreen({ onViewMatches }) {
   );
 }
 
-function MatchesScreen({ onBack, onMatchClick }) {
+function MatchesScreen({ onBack }) {
+  return (
+    <div className="card">
+      <button className="btn btn-outline" style={{marginBottom:16}} onClick={onBack}>
+        ← Dashboard
+      </button>
+      <div className="h2">Your top matches</div>
+      <div className="divider"/>
+      <div className="center" style={{padding:"32px 0", gap:12}}>
+        <div style={{fontSize:40}}>🔍</div>
+        <div className="sub" style={{textAlign:"center"}}>
+          Your top matches will be shown when more users come.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/*function MatchesScreen({ onBack, onMatchClick }) {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -1023,7 +1041,7 @@ return (
       ))}
     </div>
   );
-}
+}*/
 
 function MatchDetailScreen({ match, onBack }) {
   const report = match.compatibilityReport;
