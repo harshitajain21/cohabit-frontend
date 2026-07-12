@@ -270,7 +270,7 @@ const ALL_CRITERIA = Object.keys(CRITERIA_LABELS);
 // ── API ────────────────────────────────────────────────────────────────────────
 const API =
   import.meta.env.VITE_API_URL || "http://localhost:8080";
-let authToken = null;
+let authToken = localStorage.getItem("token");
 
 async function apiCall(method, path, body, auth = true) {
   const headers = { "Content-Type": "application/json" };
@@ -459,6 +459,7 @@ function LoginScreen({ onSuccess, onRegister }) {
     try {
       const data = await apiCall("POST", "/auth/login", { iitEmail: email, password }, false);
       authToken = data.token;
+      localStorage.setItem("token", data.token);
       onSuccess(data);
     } catch(err) { setError(err.message); }
     finally { setLoading(false); }
