@@ -898,7 +898,7 @@ function DashboardScreen({ onViewMatches }) {
         `Hey! I found this roommate matching platform for IIT BHU.
 
         Join using:
-        https://yourwebsite.com`
+        https://cohabit-frontend.vercel.app/`
                 );
 
                 alert("Invitation copied!");
