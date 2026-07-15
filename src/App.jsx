@@ -832,6 +832,25 @@ return (
 
 function MatchDetailScreen({ match, onBack }) {
   const report = match.compatibilityReport;
+
+// States: "INITIAL" | "PROMPT" | "WAITING"
+  const [contactState, setContactState] = useState("INITIAL");
+  const [loading, setLoading] = useState(false);
+
+  async function handleInterest() {
+    setLoading(true);
+    try {
+      // This API call sends the intent to your backend so you know who clicked it.
+      // You will need to create this route on your server to save the request in your database.
+      await apiCall("POST", "/matches/interest", { targetUserId: match.userId });
+      setContactState("WAITING");
+    } catch (err) {
+      alert(err.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="card">
       <button className="back-btn" onClick={onBack} style={{marginBottom:20}}>← Back to matches</button>
@@ -872,9 +891,62 @@ function MatchDetailScreen({ match, onBack }) {
       )}
 
       <div className="divider"/>
-      <button className="btn btn-primary" style={{opacity:0.5, cursor:"default"}} disabled>
-        🔒 Unlock contact
-      </button>
+{/* --- New Contact Unlock Flow --- */}
+
+      {contactState === "INITIAL" && (
+        <button
+          className="btn btn-primary"
+          onClick={() => setContactState("PROMPT")}
+        >
+          🔒 Unlock contact
+        </button>
+      )}
+
+      {contactState === "PROMPT" && (
+        <div style={{
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "16px",
+          padding: "20px",
+          textAlign: "center"
+        }}>
+          <div className="sub" style={{ marginBottom: "20px", fontSize: "14px", color: T.cream }}>
+            If both sides are interested, you will have to pay <strong>₹25</strong> to unlock contact details.
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <button
+              className="btn btn-primary"
+              onClick={handleInterest}
+              disabled={loading}
+            >
+              {loading ? "Sending..." : "Interested"}
+            </button>
+            <button
+              className="btn btn-outline"
+              onClick={onBack}
+            >
+              See other options
+            </button>
+          </div>
+        </div>
+      )}
+
+      {contactState === "WAITING" && (
+        <div style={{
+          background: "rgba(76,175,125,0.1)",
+          border: "1px solid rgba(76,175,125,0.2)",
+          borderRadius: "16px",
+          padding: "20px",
+          textAlign: "center"
+        }}>
+          <div style={{ fontSize: "28px", marginBottom: "8px" }}>⏳</div>
+          <div className="h2" style={{ fontSize: "16px", color: T.green }}>Request Sent</div>
+          <div className="sub mt8">
+            Waiting for the other person to accept your request...
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
@@ -897,6 +969,48 @@ export default function App() {
   const [pendingEmail, setPendingEmail] = useState("");
   const [selectedMatch, setSelectedMatch] = useState(null);
 
+  // Add a loading state for the initial auth check
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  useEffect(() => {
+      const checkSession = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setIsInitializing(false);
+          return;
+        }
+
+        try {
+          // Verify the token and check if they have completed the questionnaire
+          await apiCall("GET", "/questionnaire/me");
+          setScreen(SCREENS.DASHBOARD);
+        } catch (err) {
+          if (err.message.includes("Questionnaire not found")) {
+            setScreen(SCREENS.QUESTIONNAIRE);
+          } else {
+            // Token is likely invalid or expired; clear it and prompt login
+            localStorage.removeItem("token");
+            authToken = null;
+            setScreen(SCREENS.LOGIN);
+          }
+        } finally {
+          setIsInitializing(false);
+        }
+      };
+
+      checkSession();
+    }, []);
+
+    // Show a spinner while checking the local token
+    if (isInitializing) {
+      return (
+        <div className="shell" style={{ justifyContent: "center" }}>
+          <style>{css}</style>
+          <Spinner />
+        </div>
+      );
+    }
+
   return (
     <>
       <style>{css}</style>
@@ -904,7 +1018,10 @@ export default function App() {
         <div className="topbar">
           <div className="logo">cohabit</div>
           {[SCREENS.DASHBOARD, SCREENS.MATCHES, SCREENS.MATCH_DETAIL].includes(screen) && (
-            <button className="back-btn" onClick={()=>{ authToken=null; setScreen(SCREENS.LOGIN); }}>
+            <button className="back-btn" onClick={()=>{
+                localStorage.removeItem("token");
+                authToken=null;
+                setScreen(SCREENS.LOGIN); }}>
               Sign out
             </button>
           )}
