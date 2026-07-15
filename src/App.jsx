@@ -737,17 +737,17 @@ function DashboardScreen({ onViewMatches }) {
               <div className="sub">Compatibility Score</div>
             </div>
 
-            {report.matchedTraits?.length > 0 && (
+            {report.matchingTraits?.length > 0 && (
               <div className="field mt24">
                 <span className="label">Strong matches</span>
-                <div>{report.matchedTraits.map(t => <span key={t} className="tag tag-green">✓ {t}</span>)}</div>
+                <div>{report.matchingTraits.map(t => <span key={t} className="tag tag-green">✓ {t}</span>)}</div>
               </div>
             )}
 
-            {report.conflicts?.length > 0 && (
+            {report.potentialConflicts?.length > 0 && (
               <div className="field mt16">
                 <span className="label">Conflicts</span>
-                <div>{report.conflicts.map(t => <span key={t} className="tag tag-red">⚠ {t}</span>)}</div>
+                <div>{report.potentialConflicts.map(t => <span key={t} className="tag tag-red">⚠ {t}</span>)}</div>
               </div>
             )}
 
@@ -845,17 +845,17 @@ function MatchDetailScreen({ match, onBack }) {
         <ScorePill score={report?.overallScore ?? 0}/>
       </div>
 
-      {report?.matchedTraits?.length > 0 && (
+      {report?.matchingTraits?.length > 0 && (
         <div className="field">
           <span className="label">Strong matches</span>
-          <div>{report.matchedTraits.map(t => <span key={t} className="tag tag-green">✓ {t}</span>)}</div>
+          <div>{report.matchingTraits.map(t => <span key={t} className="tag tag-green">✓ {t}</span>)}</div>
         </div>
       )}
 
-      {report?.conflicts?.length > 0 && (
+      {report?.potentialConflicts?.length > 0 && (
         <div className="field">
           <span className="label">Conflicts</span>
-          <div>{report.conflicts.map(t => <span key={t} className="tag tag-red">⚠ {t}</span>)}</div>
+          <div>{report.potentialConflicts.map(t => <span key={t} className="tag tag-red">⚠ {t}</span>)}</div>
         </div>
       )}
 
