@@ -635,205 +635,6 @@ function PreferencesScreen({ onComplete, onSkip }) {
   );
 }
 
-/*function FriendCompatibilityScreen({ onContinue }) {
-  const [email, setEmail] = useState("");
-  const [report, setReport] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [showInvite, setShowInvite] = useState(false);
-
-  async function checkCompatibility() {
-    if (!email.trim()) {
-      setError("Enter your friend's IIT email.");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-    setReport(null);
-
-    try {
-      const data = await apiCall(
-        "POST",
-        "/friends/check-compatibility",
-        {
-          recipientIitEmail: email
-        }
-      );
-
-      setReport(data);
-    } catch (err) {
-        if (err.message.includes("User account was not found")) {
-            setShowInvite(true);
-            setError("");
-        } else {
-            setError(err.message);
-        }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="card">
-      <div className="step-hint">Free Feature</div>
-
-      <div className="h2">
-        Check compatibility with a friend
-      </div>
-
-      <div className="sub mt8">
-        Enter your friend's IIT BHU email and instantly see your compatibility.
-      </div>
-
-      <div className="divider"/>
-
-      <div className="field">
-        <span className="label">Friend's IIT Email</span>
-
-        <input
-          className="input"
-          placeholder="friend@itbhu.ac.in"
-          value={email}
-          onChange={e=>{
-            setEmail(e.target.value);
-            setError("");
-          }}
-        />
-      </div>
-
-      {error && (
-        <div className="error-msg" style={{marginBottom:12}}>
-          {error}
-        </div>
-      )}
-
-    {showInvite && (
-      <div className="card">
-        <h3>Your friend hasn't joined Cohabit yet.</h3>
-
-        <p>
-          Invite them so you can check your compatibility.
-        </p>
-
-        <button
-          className="btn btn-primary"
-          onClick={() => {
-            navigator.clipboard.writeText(
-    `Hey! I found this roommate matching platform for IIT BHU.
-
-    Create your profile and let's check our compatibility.
-
-    https://yourwebsite.com`
-            );
-
-            alert("Invite copied!");
-          }}
-        >
-          Copy Invite
-        </button>
-      </div>
-    )}
-      <button
-        className="btn btn-primary"
-        onClick={checkCompatibility}
-        disabled={loading}
-      >
-        {loading ? "Checking..." : "Check Compatibility"}
-      </button>
-
-      {report && (
-        <>
-          <div className="divider"/>
-
-          <div className="center">
-
-            <div
-              style={{
-                fontSize:44,
-                fontWeight:700,
-                color:T.coral
-              }}
-            >
-              {report.overallScore}%
-            </div>
-
-            <div className="sub">
-              Compatibility Score
-            </div>
-
-          </div>
-
-          <div className="mt24">
-
-            <span className="label">
-              Matching Traits
-            </span>
-
-            <div>
-              {report.matchedTraits?.map(t=>(
-                <span
-                  key={t}
-                  className="tag tag-green"
-                >
-                  ✓ {t}
-                </span>
-              ))}
-            </div>
-
-          </div>
-
-          <div className="mt16">
-
-            <span className="label">
-              Potential Conflicts
-            </span>
-
-            <div>
-              {report.conflicts?.map(t=>(
-                <span
-                  key={t}
-                  className="tag tag-red"
-                >
-                  ⚠ {t}
-                </span>
-              ))}
-            </div>
-
-          </div>
-
-          <div className="mt24">
-
-            <button
-              className="btn btn-outline"
-              style={{width:"100%"}}
-              onClick={onContinue}
-            >
-              Browse Roommate Matches →
-            </button>
-
-          </div>
-        </>
-      )}
-
-      {!report && (
-        <div className="mt24">
-
-          <button
-            className="btn btn-outline"
-            style={{width:"100%"}}
-            onClick={onContinue}
-          >
-            Skip for now →
-          </button>
-
-        </div>
-      )}
-
-    </div>
-  );
-}*/
-
 function DashboardScreen({ onViewMatches }) {
   const [email, setEmail] = useState("");
   const [report, setReport] = useState(null);
@@ -974,25 +775,10 @@ function DashboardScreen({ onViewMatches }) {
   );
 }
 
-function MatchesScreen({ onBack }) {
-  return (
-    <div className="card">
-      <button className="btn btn-outline" style={{marginBottom:16}} onClick={onBack}>
-        ← Dashboard
-      </button>
-      <div className="h2">Your top matches</div>
-      <div className="divider"/>
-      <div className="center" style={{padding:"32px 0", gap:12}}>
-        <div style={{fontSize:40}}>🔍</div>
-        <div className="sub" style={{textAlign:"center"}}>
-          Your top matches will be shown when more users come.
-        </div>
-      </div>
-    </div>
-  );
-}
+//-----------------------
 
-/*function MatchesScreen({ onBack, onMatchClick }) {
+
+function MatchesScreen({ onBack, onMatchClick }) {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -1008,7 +794,6 @@ function MatchesScreen({ onBack }) {
 
 return (
     <div className="card">
-
       <button
         className="btn btn-outline"
         style={{marginBottom:16}}
@@ -1030,10 +815,12 @@ return (
       {matches.map((m, i) => (
         <div key={m.userId || i} className="match-card" onClick={()=>onMatchClick(m)}>
           <div className="avatar" style={{background: [T.slate, "#2D4A6B", "#4A3D6B", "#3D6B4A"][i%4]}}>
-            {initials(m.name)}
+            🔒
           </div>
           <div>
-            <div className="match-name">{m.name}</div>
+            <div className="match-name" style={{filter:"blur(5px)", userSelect:"none"}}>
+              {initials(m.name)}{"•".repeat(Math.max(3, (m.name||"").length - 2))}
+            </div>
             <div className="match-meta">{m.branch} · Year {m.year}</div>
           </div>
           <ScorePill score={m.compatibilityReport?.overallScore ?? 0}/>
@@ -1041,17 +828,18 @@ return (
       ))}
     </div>
   );
-}*/
+}
 
 function MatchDetailScreen({ match, onBack }) {
   const report = match.compatibilityReport;
   return (
     <div className="card">
       <button className="back-btn" onClick={onBack} style={{marginBottom:20}}>← Back to matches</button>
+
       <div style={{display:"flex", alignItems:"center", gap:16, marginBottom:24}}>
-        <div className="avatar" style={{width:56,height:56,fontSize:22,background:T.slate}}>{initials(match.name)}</div>
+        <div className="avatar" style={{width:56,height:56,fontSize:22,background:T.slate}}>🔒</div>
         <div>
-          <div className="h2">{match.name}</div>
+          <div className="h2" style={{filter:"blur(6px)", userSelect:"none"}}>{match.name}</div>
           <div className="sub">{match.branch} · Year {match.year}</div>
         </div>
         <ScorePill score={report?.overallScore ?? 0}/>
@@ -1085,7 +873,7 @@ function MatchDetailScreen({ match, onBack }) {
 
       <div className="divider"/>
       <button className="btn btn-primary" style={{opacity:0.5, cursor:"default"}} disabled>
-        🔒 Unlock contact — coming soon
+        🔒 Unlock contact
       </button>
     </div>
   );
