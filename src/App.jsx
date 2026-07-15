@@ -232,7 +232,7 @@ const css = `
 `;
 
 // ── Constants from backend enums ───────────────────────────────────────────────
-const BRANCHES = ["Computer Science","Mathematics & Computing","Electronics","Mechanical","Civil","Chemical","Mining","Metallurgical","Pharmaceutical","Biochemical","Architecture","Other"];
+const BRANCHES = ["Computer Science","Mathematics & Computing","Electronics","Electrical","Mechanical","Civil","Chemical","Mining","Metallurgical","Pharmaceutical","Biochemical/Biomedical","Architecture","Ceramic","Material Science","Other"];
 
 const QUESTIONNAIRE_STEPS = [
   { key: "sleepSchedule",       label: "Sleep schedule",      sub: "When do you usually sleep?",
