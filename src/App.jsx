@@ -1,118 +1,142 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 const T = {
-  navy:    "#0F1629",
-  navyMid: "#1A2540",
-  slate:   "#3D4F6B",
-  slateL:  "#6B7FA3",
-  cream:   "#F0EDE6",
-  creamD:  "#D8D4CC",
-  coral:   "#E8715A",
-  coralD:  "#C95A44",
+  navy:    "#253044",
+  navyMid: "#FFFFFF",
+  slate:   "#596477",
+  slateL:  "#596477",
+  cream:   "#253044",
+  creamD:  "#B8B6C5",
+  coral:   "#6434DF",
+  coralD:  "#5125C7",
   white:   "#FFFFFF",
-  green:   "#4CAF7D",
-  yellow:  "#F5C842",
-  red:     "#E85A5A",
+  green:   "#176B4B",
+  yellow:  "#8A5A00",
+  red:     "#B42335",
 };
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:ital,wght@1,700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: ${T.navy};
+    font-family: 'Instrument Sans', sans-serif;
+    background: #fffdf5;
     color: ${T.cream};
     min-height: 100vh;
   }
 
-  /* Layout */
+  :root {
+    --outline: #252b3a;
+    --mint: #9bf1cd;
+    --pink: #ff78c5;
+    --amber: #ffd05b;
+    --violet: #6434df;
+  }
+
   .shell {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 16px 64px;
+    padding: 28px 24px 64px;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .shell::before, .shell::after {
+    content: ''; position: fixed; z-index: -1; pointer-events: none;
+    border: 3px solid var(--outline);
+  }
+  .shell::before {
+    width: 84px; height: 84px; border-radius: 50%; background: var(--pink);
+    top: 150px; left: max(24px, calc((100vw - 1040px) / 2));
+  }
+  .shell::after {
+    width: 64px; height: 64px; background: var(--amber); transform: rotate(14deg);
+    right: max(24px, calc((100vw - 1040px) / 2)); bottom: 120px;
   }
 
   .topbar {
     width: 100%;
-    max-width: 480px;
+    max-width: 960px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 36px;
+    margin-bottom: 44px;
   }
 
   .logo {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-size: 22px;
+    font-family: 'Host Grotesk', sans-serif;
+    font-size: 27px;
+    font-weight: 800;
     color: ${T.coral};
-    letter-spacing: -0.5px;
+    letter-spacing: -1.2px;
   }
 
   .card {
     width: 100%;
-    max-width: 480px;
+    max-width: 600px;
     background: ${T.navyMid};
-    border-radius: 20px;
-    padding: 36px 32px;
-    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 28px;
+    padding: 36px;
+    border: 3px solid var(--outline);
+    box-shadow: 9px 9px 0 #b99af8;
   }
 
-  /* Typography */
-  .h1 { font-size: 26px; font-weight: 700; line-height: 1.2; color: ${T.cream}; }
-  .h2 { font-size: 20px; font-weight: 700; color: ${T.cream}; }
-  .sub { font-size: 14px; color: ${T.slateL}; margin-top: 6px; line-height: 1.5; }
-  .label { font-size: 13px; font-weight: 600; color: ${T.slateL}; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: block; }
+  .h1, .h2 { font-family: 'Host Grotesk', sans-serif; color: ${T.cream}; letter-spacing: -0.04em; }
+  .h1 { font-size: clamp(32px, 6vw, 46px); font-weight: 800; line-height: 1.08; }
+  .h2 { font-size: 23px; font-weight: 700; line-height: 1.2; }
+  .sub { font-size: 16px; color: #596477; margin-top: 8px; line-height: 1.65; }
+  .label { font-size: 14px; font-weight: 700; color: #596477; letter-spacing: 0.02em; margin-bottom: 8px; display: block; }
   .error-msg { font-size: 13px; color: ${T.red}; margin-top: 4px; }
 
-  /* Inputs */
   .input {
     width: 100%;
-    background: rgba(255,255,255,0.05);
-    border: 1.5px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
+    background: #fff;
+    border: 2px solid #a7a5b3;
+    border-radius: 13px;
     padding: 13px 16px;
     font-size: 15px;
     color: ${T.cream};
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    outline: none;
-    transition: border-color 0.15s;
+    font-family: 'Instrument Sans', sans-serif;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
   }
-  .input:focus { border-color: ${T.coral}; }
-  .input::placeholder { color: ${T.slate}; }
+  .input:focus { outline: 3px solid #b99af8; outline-offset: 2px; border-color: ${T.coral}; }
+  .input::placeholder { color: #737889; }
   select.input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7FA3' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
-  select.input option { background: ${T.navyMid}; }
+  select.input option { background: #fff; }
 
   /* Field group */
   .field { margin-bottom: 18px; }
   .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-  /* Buttons */
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Instrument Sans', sans-serif;
     font-size: 15px;
     font-weight: 600;
-    border-radius: 12px;
-    border: none;
+    border-radius: 15px;
+    border: 2px solid var(--outline);
     cursor: pointer;
-    transition: all 0.15s;
+    transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
     padding: 14px 24px;
+    box-shadow: 4px 4px 0 var(--outline);
   }
+  .btn:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--outline); }
+  .btn:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--outline); }
+  .btn:focus-visible, .back-btn:focus-visible, .link-btn:focus-visible, .chip:focus-visible, .toggle:focus-visible { outline: 3px solid #6434df; outline-offset: 4px; }
   .btn:disabled { opacity: 0.45; cursor: not-allowed; }
   .btn-primary { background: ${T.coral}; color: ${T.white}; width: 100%; }
   .btn-primary:hover:not(:disabled) { background: ${T.coralD}; }
   .btn-ghost { background: transparent; color: ${T.slateL}; padding: 10px 0; font-size: 14px; }
   .btn-ghost:hover { color: ${T.cream}; }
-  .btn-outline { background: transparent; border: 1.5px solid rgba(255,255,255,0.12); color: ${T.cream}; }
+  .btn-outline { background: #fff; color: ${T.cream}; }
   .btn-outline:hover { border-color: ${T.coral}; color: ${T.coral}; }
 
   /* Progress ring */
@@ -124,31 +148,30 @@ const css = `
   }
   .ring-label { font-size: 12px; color: ${T.slateL}; margin-top: 8px; font-weight: 500; letter-spacing: 0.04em; }
 
-  /* Chip option selector */
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip {
     padding: 9px 16px;
     border-radius: 50px;
     font-size: 14px;
     font-weight: 500;
-    border: 1.5px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.04);
-    color: ${T.slateL};
+    border: 2px solid #8d899b;
+    background: #fff;
+    color: #394256;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: background 180ms ease, transform 180ms ease;
     user-select: none;
   }
   .chip:hover { border-color: ${T.coral}; color: ${T.cream}; }
-  .chip.selected { border-color: ${T.coral}; background: rgba(232,113,90,0.15); color: ${T.coral}; }
+  .chip.selected { border-color: ${T.coral}; background: #f1ebff; color: ${T.coral}; box-shadow: 3px 3px 0 #b99af8; }
 
   /* Toggle */
-  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #dedce4; }
   .toggle-row:last-child { border-bottom: none; }
   .toggle-label { font-size: 14px; color: ${T.cream}; }
   .toggle-sub { font-size: 12px; color: ${T.slateL}; margin-top: 2px; }
   .toggle {
     position: relative; width: 44px; height: 24px; cursor: pointer;
-    background: rgba(255,255,255,0.1); border-radius: 12px; border: none; flex-shrink: 0;
+    background: #777d8b; border-radius: 12px; border: 2px solid var(--outline); flex-shrink: 0;
     transition: background 0.15s;
   }
   .toggle.on { background: ${T.coral}; }
@@ -159,20 +182,25 @@ const css = `
   }
   .toggle.on::after { transform: translateX(20px); }
 
-  /* Match card */
   .match-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
+    width: 100%;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    background: #fff;
+    border: 2px solid var(--outline);
+    border-radius: 17px;
     padding: 20px;
     margin-bottom: 12px;
     display: flex;
     align-items: center;
     gap: 16px;
     cursor: pointer;
-    transition: border-color 0.15s;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+    box-shadow: 3px 3px 0 #d8d1e8;
   }
-  .match-card:hover { border-color: rgba(232,113,90,0.4); }
+  .match-card:hover { transform: translateY(-2px); box-shadow: 5px 5px 0 #b99af8; }
+  .match-card:focus-visible { outline: 3px solid ${T.coral}; outline-offset: 4px; }
   .avatar {
     width: 48px; height: 48px; border-radius: 50%;
     background: ${T.slate};
@@ -189,14 +217,14 @@ const css = `
     font-weight: 700;
     flex-shrink: 0;
   }
-  .score-high { background: rgba(76,175,125,0.15); color: ${T.green}; }
-  .score-mid  { background: rgba(245,200,66,0.15);  color: ${T.yellow}; }
-  .score-low  { background: rgba(232,90,90,0.15);   color: ${T.red}; }
+  .score-high { background: #dff8ed; color: ${T.green}; }
+  .score-mid  { background: #fff3cd; color: ${T.yellow}; }
+  .score-low  { background: #ffe5e8; color: ${T.red}; }
 
   /* Match detail */
   .trait-row {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 11px 0; border-bottom: 1px solid #dedce4;
     font-size: 14px;
   }
   .trait-row:last-child { border-bottom: none; }
@@ -207,28 +235,46 @@ const css = `
 
   /* Tag chips */
   .tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; margin: 3px; }
-  .tag-green { background: rgba(76,175,125,0.12); color: ${T.green}; }
-  .tag-red   { background: rgba(232,90,90,0.12);  color: ${T.red}; }
+  .tag-green { background: #dff8ed; color: ${T.green}; }
+  .tag-red   { background: #ffe5e8; color: ${T.red}; }
 
   /* Loading */
   .spinner {
     width: 36px; height: 36px; border-radius: 50%;
-    border: 3px solid rgba(255,255,255,0.08);
+    border: 3px solid #dedce4;
     border-top-color: ${T.coral};
     animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .divider { height: 1px; background: rgba(255,255,255,0.07); margin: 20px 0; }
+  .divider { height: 1px; background: #dedce4; margin: 20px 0; }
   .mt8 { margin-top: 8px; }
   .mt16 { margin-top: 16px; }
   .mt24 { margin-top: 24px; }
   .center { text-align: center; display: flex; flex-direction: column; align-items: center; }
   .step-hint { font-size: 12px; color: ${T.slate}; font-weight: 500; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
-  .back-btn { background: none; border: none; color: ${T.slateL}; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0; font-family: inherit; }
+  .back-btn { background: none; border: none; color: #505a70; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0; font-family: inherit; }
   .back-btn:hover { color: ${T.cream}; }
   .link-btn { background: none; border: none; color: ${T.coral}; font-size: 14px; cursor: pointer; font-family: inherit; font-weight: 500; padding: 0; }
   .link-btn:hover { text-decoration: underline; }
+
+  @media (max-width: 760px) {
+    .shell { padding: 20px 18px 44px; }
+    .shell::before { width: 54px; height: 54px; top: 112px; left: -20px; }
+    .shell::after { width: 42px; height: 42px; right: -16px; bottom: 70px; }
+    .topbar { margin-bottom: 30px; }
+    .card { padding: 28px 24px; border-radius: 24px; box-shadow: 6px 6px 0 #b99af8; }
+    .row-2 { grid-template-columns: 1fr; gap: 0; }
+  }
+  @media (max-width: 420px) {
+    .shell { padding-inline: 14px; }
+    .card { padding: 24px 18px; }
+    .btn { padding: 12px 16px; }
+    .chip { padding: 9px 12px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
 `;
 
 // ── Constants from backend enums ───────────────────────────────────────────────
@@ -270,8 +316,6 @@ const ALL_CRITERIA = Object.keys(CRITERIA_LABELS);
 // ── API ────────────────────────────────────────────────────────────────────────
 const API =
   import.meta.env.VITE_API_URL || "http://localhost:8080";
-let authToken = localStorage.getItem("token");
-
 async function apiCall(method, path, body, auth = true) {
   const headers = { "Content-Type": "application/json" };
 
@@ -310,7 +354,7 @@ function ProgressRing({ step, total }) {
   return (
     <div className="ring-wrap">
       <svg width="80" height="80" viewBox="0 0 80 80">
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="5"/>
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#dedce4" strokeWidth="5"/>
         <circle cx={cx} cy={cy} r={r} fill="none" stroke={T.coral} strokeWidth="5"
           strokeDasharray={`${dash} ${circumference}`} strokeLinecap="round"
           style={{ transform: "rotate(-90deg)", transformOrigin: "40px 40px", transition: "stroke-dasharray 0.35s ease" }}/>
@@ -446,21 +490,6 @@ function RegisterScreen({ onSuccess, onLogin }) {
   );
 }
 
-function VerifyScreen({ email, onVerified }) {
-  return (
-    <div className="card center" style={{gap:16}}>
-      <div style={{fontSize:48}}>📬</div>
-      <div className="h2">Check your inbox</div>
-      <div className="sub" style={{textAlign:"center"}}>
-        We sent a verification link to <strong style={{color:T.cream}}>{email}</strong>.<br/>
-        Click it to activate your account, then come back here.
-      </div>
-      <div className="divider" style={{width:"100%"}}/>
-      <button className="btn btn-primary" onClick={onVerified}>I've verified my email →</button>
-    </div>
-  );
-}
-
 function LoginScreen({ onSuccess, onRegister }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -472,7 +501,6 @@ function LoginScreen({ onSuccess, onRegister }) {
     setLoading(true); setError("");
     try {
       const data = await apiCall("POST", "/auth/login", { iitEmail: email, password }, false);
-      authToken = data.token;
       localStorage.setItem("token", data.token);
       onSuccess(data);
     } catch(err) { setError(err.message); }
@@ -540,9 +568,9 @@ function QuestionnaireScreen({ onComplete }) {
       <div className="divider"/>
       <div className="chips" style={{marginBottom:24}}>
         {q.options.map(([val, display]) => (
-          <div key={val} className={`chip ${answers[q.key] === val ? "selected":""}`} onClick={()=>pick(val)}>
+          <button type="button" key={val} className={`chip ${answers[q.key] === val ? "selected":""}`} aria-pressed={answers[q.key] === val} onClick={()=>pick(val)}>
             {display}
-          </div>
+          </button>
         ))}
       </div>
       {error && <div className="error-msg" style={{marginBottom:12}}>{error}</div>}
@@ -599,18 +627,18 @@ function PreferencesScreen({ onComplete, onSkip }) {
       <span className="label">Top priorities — what matters most to you</span>
       <div className="chips" style={{marginBottom:24}}>
         {ALL_CRITERIA.map(c => (
-          <div key={c} className={`chip ${topPriorities.has(c)?"selected":""}`} onClick={()=>toggleSet(topPriorities,setTopPriorities,c)}>
+          <button type="button" key={c} className={`chip ${topPriorities.has(c)?"selected":""}`} aria-pressed={topPriorities.has(c)} onClick={()=>toggleSet(topPriorities,setTopPriorities,c)}>
             {CRITERIA_LABELS[c]}
-          </div>
+          </button>
         ))}
       </div>
 
       <span className="label">Deal breakers — hard no-match conditions</span>
       <div className="chips" style={{marginBottom:24}}>
         {ALL_CRITERIA.map(c => (
-          <div key={c} className={`chip ${dealBreakers.has(c)?"selected":""}`} onClick={()=>toggleSet(dealBreakers,setDealBreakers,c)}>
+          <button type="button" key={c} className={`chip ${dealBreakers.has(c)?"selected":""}`} aria-pressed={dealBreakers.has(c)} onClick={()=>toggleSet(dealBreakers,setDealBreakers,c)}>
             {CRITERIA_LABELS[c]}
-          </div>
+          </button>
         ))}
       </div>
 
@@ -813,7 +841,7 @@ return (
         </div>
       )}
       {matches.map((m, i) => (
-        <div key={m.userId || i} className="match-card" onClick={()=>onMatchClick(m)}>
+        <button type="button" key={m.userId || i} className="match-card" onClick={()=>onMatchClick(m)} aria-label={`View compatibility details for match ${i + 1}`}>
           <div className="avatar" style={{background: [T.slate, "#2D4A6B", "#4A3D6B", "#3D6B4A"][i%4]}}>
             🔒
           </div>
@@ -824,7 +852,7 @@ return (
             <div className="match-meta">{m.branch} · Year {m.year}</div>
           </div>
           <ScorePill score={m.compatibilityReport?.overallScore ?? 0}/>
-        </div>
+        </button>
       ))}
     </div>
   );
@@ -960,13 +988,11 @@ const SCREENS = {
   PREFERENCES: "PREFERENCES",
   MATCHES: "MATCHES",
   MATCH_DETAIL: "MATCH_DETAIL",
-  FRIEND_CHECK: "FRIEND_CHECK",
   DASHBOARD: "DASHBOARD"
 };
 
 export default function App() {
   const [screen, setScreen] = useState(SCREENS.REGISTER);
-  const [pendingEmail, setPendingEmail] = useState("");
   const [selectedMatch, setSelectedMatch] = useState(null);
 
   // Add a loading state for the initial auth check
@@ -990,7 +1016,6 @@ export default function App() {
           } else {
             // Token is likely invalid or expired; clear it and prompt login
             localStorage.removeItem("token");
-            authToken = null;
             setScreen(SCREENS.LOGIN);
           }
         } finally {
@@ -1020,7 +1045,6 @@ export default function App() {
           {[SCREENS.DASHBOARD, SCREENS.MATCHES, SCREENS.MATCH_DETAIL].includes(screen) && (
             <button className="back-btn" onClick={()=>{
                 localStorage.removeItem("token");
-                authToken=null;
                 setScreen(SCREENS.LOGIN); }}>
               Sign out
             </button>
@@ -1034,12 +1058,6 @@ export default function App() {
             }}
             onLogin={() => setScreen(SCREENS.LOGIN)}
         />
-        )}
-        {screen === SCREENS.VERIFY && (
-          <VerifyScreen
-            email={pendingEmail}
-            onVerified={() => setScreen(SCREENS.LOGIN)}
-          />
         )}
         {screen === SCREENS.LOGIN && (
           <LoginScreen
@@ -1071,11 +1089,6 @@ export default function App() {
         )}
         {screen === SCREENS.DASHBOARD && (
           <DashboardScreen onViewMatches={() => setScreen(SCREENS.MATCHES)} />
-        )}
-        {screen === SCREENS.FRIEND_CHECK && (
-          <FriendCompatibilityScreen
-            onContinue={() => setScreen(SCREENS.MATCHES)}
-          />
         )}
         {screen === SCREENS.MATCHES && (
           <MatchesScreen
